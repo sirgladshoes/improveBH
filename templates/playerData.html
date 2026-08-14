@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ImproveBH</title>
+</head>
+
+<body style="color:rgb(1, 187, 131); font-family: Arial; background-color: rgb(2, 46, 31);">
+    <h1>ImproveBH</h1>
+    <p>{{data.name}}</p>
+    <p>wins: {{data.wins}}</p>
+    <p>loses: {{data.games - data.wins}}</p>
+    <p>win rate: {{(data.wins/(data.games+0.000001))*100}}</p>
+    <p>legends: {{data.legends}}</p>
+</body>
+</html>
