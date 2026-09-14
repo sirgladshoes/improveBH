@@ -1,15 +1,35 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>ImproveBH</title>
 </head>
 
-<body style="color:rgb(1, 187, 131); font-family: Arial; background-color: rgb(2, 46, 31);">
+<body style="color:#E5E7EB; font-family: Arial; background-color: #111827;">
     <h1>ImproveBH</h1>
-    <p>{{data.name}}</p>
-    <p>wins: {{data.wins}}</p>
-    <p>loses: {{data.games - data.wins}}</p>
-    <p>win rate: {{(data.wins/(data.games+0.000001))*100}}</p>
-    <p>legends: {{data.legends}}</p>
+    <p>{{general.name}}</p>
+    <p>Playtime: {{general.gameTime}}
+    <p>Level:  {{general.level}}</p>
+    <p>Wins: {{general.wins}}</p>
+    <p>Loses: {{general.games - general.wins}}</p>
+    <p>Win rate: {{(general.wins/(general.games+0.000001))*100}}</p>
+    
+
+    <div class="flex-container" style="display: flex; gap: 15px;">
+        <div class = "flex-child" style="background-color:#1F2937; flex: 1; padding: 10px;" margin=auto>
+            <h2>Legend Stats</h2>
+            {% for l in general.legends %}
+                <p>name: {{legendLookup[l.id].legend_name}}, level: {{l.level}}</p>
+            {% endfor %}
+
+        </div>
+        <div class = "flex-child" style="background-color:#1F2937; flex: 1; padding: 10px;" margin=auto>
+            <p>test2</p>
+        </div>
+        <div class = "flex-child" style="background-color:#1F2937; flex: 1; padding: 10px;" margin=auto>
+            <p>test3</p>
+        </div>
+    </div>
+
 </body>
 </html>

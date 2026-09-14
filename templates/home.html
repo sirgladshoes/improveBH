@@ -4,15 +4,26 @@
     <title>ImproveBH</title>
 </head>
 
-<body style="color:rgb(1, 187, 131); font-family: Arial; background-color: rgb(2, 46, 31);">
+<body style="color:#E5E7EB; font-family: Arial; background-color: #111827;">
     <h1>InproveBH</h1>
     
     <h2>Enter Brawlhalla ID</h2>
-    <form action="/playerData-all", method="get">
+    <form action="/playerData", method="get">
         <input type = "text" name = "bhid">
-        <input type="submit" value = "All Data">
-        <input type="submit" formaction="/playerData-1v1" value = "Ranked 1v1">
-         <input type="submit" formaction="/playerData-3v3" value = "Ranked 3v3">
+        <input type="submit">
     </form>
+
+    <div class = "panel" style="background-color:#1F2937; padding: 10px;">
+        <h2>Import Replays</h2>
+
+        <input type="file" id="replayFolder" webkitdirectory multiple>
+
+        <button id="uploadButton">Import</button>
+
+        <p id="status"></p>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+        <script src="/static/upload.js"></script>
+    </div>
 </body>
 </html>
