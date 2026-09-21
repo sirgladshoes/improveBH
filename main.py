@@ -35,13 +35,16 @@ async def search(request:Request, bhid:str):
         database.insert_tracked_player(int(bhid))
         database.insert_general_api_data(int(time()), data)
 
-    data = get_general_player_data(int(bhid))
+    current = get_general_player_data(int(bhid))
+
+    #print(current)
 
     return templates.TemplateResponse(
         request=request,
         name="playerData.html",
-        context={"general":data, "legendLookup": legend_lookup}
+        context={"current":current, "legendLookup": legend_lookup}
     )
+
 
 @app.post("/upload")
 async def upload(file: UploadFile = File(...), playerName: str = ""):
@@ -61,8 +64,8 @@ async def upload(file: UploadFile = File(...), playerName: str = ""):
             replay_id = hashlib.sha256(file_bytes).hexdigest()
             try:
                 replay_data = read_replay_file(file_bytes)
-
-                database.insert_replay(55428652, replay_id, timestamp, replay_data)
+                if replay_data:
+                    database.insert_replay(55428652, replay_id, timestamp, replay_data)
             except:
                 pass
 
@@ -106,7 +109,7 @@ def get_general_player_data(bhid:int):
 
 def generate_legend_data(data:list, lookup:dict) -> list:
 
-    data.sort(key=lambda legend: legend.get("games", 0), reverse=True)
+    data.sort(key=lambda legend: legend.get("match_time", 0), reverse=True)
 
 
     result = []
@@ -116,7 +119,9 @@ def generate_legend_data(data:list, lookup:dict) -> list:
             #print(legend)
             result.append({"id":leg_id, "games":legend["games"], "wins":legend["wins"],
                 "damage_dealt":legend["damage_dealt"], "damage_taken":legend["damage_taken"], 
-                "kos":legend["damage_dealt"], "falls":legend["falls"], "match_time":legend["match_time"]
+                "kos":legend["kos"], "falls":legend["falls"], "match_time":legend["match_time"], 
+                "damage_w1": legend["damage_weapon_one"], "damage_w2": legend["damage_weapon_two"],
+                "kos_w1": legend["ko_weapon_one"], "kos_w2": legend["ko_weapon_two"]
                            })
 
     return result
@@ -168,11 +173,3 @@ def generate_weapon_data(data:list, lookup:dict) -> list:
 
 
 get_general_player_data(55428652)
-
-player_data_response = requests.get(
-    stats_url,
-    params={"brawlhalla_id": 55428652}
-)
-
-
-print(player_data_response.json())

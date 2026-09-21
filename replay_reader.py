@@ -102,6 +102,9 @@ def read_replay_file(file_bytes: bytes) -> dict:
 
     version = bit_reader.read_uint32()
 
+    if version <= 267:
+        return None
+
     output["game_data"] = {"version": version}
 
     entities = {}

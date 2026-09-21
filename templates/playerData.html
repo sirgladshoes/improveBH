@@ -6,30 +6,148 @@
 </head>
 
 <body style="color:#E5E7EB; font-family: Arial; background-color: #111827;">
+    <script id="current" type="application/json">
+        {{ current | tojson }}
+    </script>
+
+    <script id="legendLookup" type="application/json">
+        {{ legendLookup | tojson }}
+    </script>
+
     <h1>ImproveBH</h1>
-    <p>{{general.name}}</p>
-    <p>Playtime: {{general.gameTime}}
-    <p>Level:  {{general.level}}</p>
-    <p>Wins: {{general.wins}}</p>
-    <p>Loses: {{general.games - general.wins}}</p>
-    <p>Win rate: {{(general.wins/(general.games+0.000001))*100}}</p>
+    <h2>Brawlhalla ID: {{current.brawlhalla_id}}, Username: {{current.name}}</h2>
     
+    <form action="/" method="get">
+    <input type="submit" value="Return to Search">
+    </form>
 
-    <div class="flex-container" style="display: flex; gap: 15px;">
-        <div class = "flex-child" style="background-color:#1F2937; flex: 1; padding: 10px;" margin=auto>
-            <h2>Legend Stats</h2>
-            {% for l in general.legends %}
-                <p>name: {{legendLookup[l.id].legend_name}}, level: {{l.level}}</p>
-            {% endfor %}
 
-        </div>
-        <div class = "flex-child" style="background-color:#1F2937; flex: 1; padding: 10px;" margin=auto>
-            <p>test2</p>
-        </div>
-        <div class = "flex-child" style="background-color:#1F2937; flex: 1; padding: 10px;" margin=auto>
-            <p>test3</p>
+    <div class="flex-container"  style="display: flex; gap: 15px; padding: 10px; justify-content: center;">
+        <div class = "flex-child" style="background-color:#1F2937; padding: 10px; text-align: center" margin=auto>
+            <h2>Basic Stats</h2>
+            <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
+                <div class = "flex-child" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
+                    <p>Playtime: {{current.game_time//3600}} hours</p>
+                </div>
+                <div class = "flex-child" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
+                    <p>Level: {{current.level}}</p>
+                </div>
+                <div class = "flex-child" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
+                    <p>Wins: {{current.wins}}</p>
+                </div>
+                <div class = "flex-child" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
+                    <p>Loses: {{current.games - current.wins}}</p>
+                </div>
+                <div class = "flex-child" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
+                    <p>Win Rate: {{(current.wins/(current.games+0.000001))*100}}%</p>
+                </div>
+            </div>
+
         </div>
     </div>
+
+    <div class="flex-container"  style="display: flex; gap: 15px; padding: 10px; justify-content: left">
+        <div class = "panel" style="background-color:#1F2937; padding: 10px; width: 100%">
+            <h2>Import Replays</h2>
+
+            <input type="file" id="replayFolder" webkitdirectory multiple>
+
+            <button id="uploadButton">Import</button>
+
+            <p id="status"></p>
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+            <script src="/static/upload.js"></script>
+        </div>
+    </div>
+
+    <div class="flex-container"  style="display: flex; gap: 15px; padding: 10px; justify-content: left;">
+        <div class = "flex-child" style="background-color:#1F2937; padding: 10px; width: 100%">
+            <button type = "button">ranked</button>
+            <button type = "button">legends</button>
+            <button type = "button">weapons</button>
+
+            <div class ="flex-container" style="display: flex; padding:10px; justify-content: left;" margin=auto>
+                <div class="flex-child" style="display: flex; padding: 10px; flex-direction: column; gap: 5px; flex:0.25; height: 400px; overflow-y: auto; text-align: center;" margin=auto>
+                    {% for l in current.legends %}
+                        <button class="legend-item" onclick="selectLegend('{{l.id}}')">
+                            {{legendLookup[l.id].legend_name}}
+                        </button>
+                    {% endfor %}
+                </div>
+
+                <div class="flex-child" style="display: flex; flex: 1; padding: 10px; gap: 5px; text-align: center;" margin=auto>
+                    <div class = "flex-child" style="display: flex; flex-direction: column; background-color:#111827; gap: 15px; padding: 10px; width: 100%;" margin=auto>
+                        <h2 id="legend_name">Select Legend</h2>
+                        <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="legend_playtime">Playtime:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="legend_wins">Wins:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="legend_loses">Loses:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="legend_wr">Win Rate:</p>
+                            </div>
+                        </div>
+                        <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="legend_w1_damage">Weapon One Damage:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="legend_w1_kos">Weapon One KOs:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="legend_w2_damage">Weapon Two Damage:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="legend_w2_kos">Weapon Two KOs:</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <script>
+                    const current = JSON.parse(document.getElementById('current').textContent);
+                    const legendLookup = JSON.parse(document.getElementById('legendLookup').textContent);
+
+                    function selectLegend(legend) {
+
+                        document.getElementById("legend_name").textContent = legendLookup[legend].legend_name;
+                        let legIndx = 0;
+                        for(let i = 0; i<current.legends.length; i++){
+                            if (current.legends[i].id==legend){
+                                legIndx=i;
+                                break;
+                            }
+                        }
+                        document.getElementById("legend_playtime").textContent = "Playtime: " + current.legends[legIndx].match_time/3600 + " hours";
+                        document.getElementById("legend_wins").textContent = "Wins: " + current.legends[legIndx].wins;
+                        document.getElementById("legend_loses").textContent = "Loses: " + (current.legends[legIndx].games - current.legends[legIndx].wins);
+                        document.getElementById("legend_wr").textContent = "Win Rate: " + current.legends[legIndx].wins/current.legends[legIndx].games;
+                        
+                        let w1 = legendLookup[legend].weapon_one
+                        let w2 = legendLookup[legend].weapon_two
+
+                        document.getElementById("legend_w1_damage").textContent = w1 + " Damage: " + current.legends[legIndx].damage_w1;
+                        document.getElementById("legend_w1_kos").textContent = w1 + "  KOs: " + current.legends[legIndx].kos_w1;
+                        document.getElementById("legend_w2_damage").textContent = w2 + " Damage: " + current.legends[legIndx].damage_w2;
+                        document.getElementById("legend_w2_kos").textContent = w2 + " KOs: " + current.legends[legIndx].kos_w2;
+
+                        console.log("Selected:", legIndx);
+                    }
+                </script>
+            </div>
+
+
+        </div>
+    </div>
+
+    
 
 </body>
 </html>

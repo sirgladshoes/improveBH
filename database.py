@@ -28,12 +28,12 @@ def update_names(bhID:int, timestamp:int , name:str):
     if not (name in names):
         cur.execute("INSERT INTO playerNames VALUES (?, ?, ?)", (bhID, timestamp, name))
 
-def insert_replay(uploader_id, replay_id, timestamp, replay_data):
+def insert_replay(replay_id, timestamp, replay_data):
     player_data = replay_data["players"]
     is_online = replay_data["game_data"]["isOnline"]
     gamemode = replay_data["game_data"].get("playlistName", None)
 
-    cur.execute("INSERT INTO replays VALUES (?, ?, ?, ?, ?)", (uploader_id, replay_id, timestamp, bool(is_online), gamemode))
+    cur.execute("INSERT INTO replays VALUES (?, ?, ?, ?)", (replay_id, timestamp, bool(is_online), gamemode))
 
     for player in player_data:
         player_id = player_data[player].get("playerID", False)
@@ -101,7 +101,7 @@ def get_test():
 def init_tables():
     create_table("trackedPlayers(bhID INTEGER UNIQUE)")
 
-    create_table("replays(uploaderID INTEGER, replayID TEXT UNIQUE, timestamp INTEGER, isOnline BOOLEAN, gameModeName TEXT)")
+    create_table("replays(replayID TEXT UNIQUE, timestamp INTEGER, isOnline BOOLEAN, gameModeName TEXT)")
     create_table("replayPlayers(replayID TEXT, playerName TEXT, legends, wonGame BOOLEAN, deaths INTEGER)")
     create_table("playerNames(bhID INTEGER, timestamp INTEGER, name TEXT)")
 
