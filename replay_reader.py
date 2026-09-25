@@ -273,8 +273,8 @@ files = [file for file in replay_folder.iterdir() if file.is_file()]
 files.sort(key = lambda file: file.stat().st_mtime)
 
 
-#print(read_replay_file(files[1000].read_bytes()))
-# print(read_replay_file(files[4140]))
+print(read_replay_file(files[-120].read_bytes()))
+#print(read_replay_file(files[4140]))
 
 #print(read_replay_file(files[-1].read_bytes()))
 

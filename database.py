@@ -38,10 +38,9 @@ def insert_replay(replay_id, timestamp, replay_data):
     for player in player_data:
         player_id = player_data[player].get("playerID", False)
         if player_id:
-          update_names(player_id, timestamp, player)
-
-        cur.execute("INSERT INTO replayPlayers VALUES (?, ?, ?, ?, ?)", 
-            (replay_id, player, json.dumps(player_data[player]["legends"]), player_data[player].get("placement", None), player_data[player].get("deaths", None)))
+            update_names(player_id, timestamp, player)
+            cur.execute("INSERT INTO replayPlayers VALUES (?, ?, ?, ?, ?)", 
+            (replay_id, player_id, json.dumps(player_data[player]["legends"]), player_data[player].get("placement", None), player_data[player].get("deaths", None)))
 
 def commit():
     con.commit()
@@ -67,10 +66,37 @@ def fetch_general_player_data(bhID:int):
     return result
 
 def fetch_legend_data(bhID:int):
-    pass
+    result = []
+    return result
+
+def fetch_matchup_data(bhID:int):
+    result = {}
+    replayIDs = cur.execute("SELECT replayID FROM replayPlayers WHERE bhID="+str(bhID)).fetchall()
+    for id_ in replayIDs:
+        id = id_[0]
+        placement = 2
+        players = cur.execute("SELECT * FROM replayPlayers WHERE replayID=?", (str(id), )).fetchall()
+        for player in players:
+            if (player[1] == bhID):
+                placement=player[3]
+        for player in players:
+            if (player[1] != bhID and player[3]!=placement):
+                legends = json.loads(player[2])
+                for legend in legends:
+                    if not (legend in result.keys()):
+                        result[legend] = {"games":0, "wins":0}
+                    result[legend]["games"] += 1
+                    if placement>player[3]:
+                        result[legend]["wins"] += 1
+
+    order = sorted(result, key=lambda legend: result[legend]["wins"]/result[legend]["games"])
+    sorted_result = []
+    for id in order:
+        sorted_result.append({"legend_id":id, "games":result[id]["games"], "wins":result[id]["wins"]})
+    return sorted_result
+
 
 def insert_general_api_data(timestamp, data:dict):
-    print("whats goin on here")
     bhID = data["brawlhalla_id"]
     update_names(bhID, timestamp, data["name"])
 
@@ -102,7 +128,7 @@ def init_tables():
     create_table("trackedPlayers(bhID INTEGER UNIQUE)")
 
     create_table("replays(replayID TEXT UNIQUE, timestamp INTEGER, isOnline BOOLEAN, gameModeName TEXT)")
-    create_table("replayPlayers(replayID TEXT, playerName TEXT, legends, wonGame BOOLEAN, deaths INTEGER)")
+    create_table("replayPlayers(replayID TEXT, bhID INTEGER, legends, placement INTEGER, deaths INTEGER)")
     create_table("playerNames(bhID INTEGER, timestamp INTEGER, name TEXT)")
 
     create_table("playerSnapshots(bhID INTEGER, timestamp INTEGER, gameTime INTEGER, level INTEGER, games INTEGER, wins INTEGER)")
@@ -115,6 +141,7 @@ def init_tables():
 #init_tables()
 
 id = 55428652
+#print(fetch_matchup_data(id))
 #insert_general_api_data(id, 20, main.get_general_player_data(id))
 #insert_replay(id, "hash_id", replay_reader.test_replay())
 #get_test()

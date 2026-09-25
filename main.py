@@ -36,48 +36,39 @@ async def search(request:Request, bhid:str):
         database.insert_general_api_data(int(time()), data)
 
     current = get_general_player_data(int(bhid))
-
-    #print(current)
+    current_ranked = get_ranked_data(int(bhid))
+    matchups = database.fetch_matchup_data(int(bhid))
 
     return templates.TemplateResponse(
         request=request,
         name="playerData.html",
-        context={"current":current, "legendLookup": legend_lookup}
+        context={"current":current, "current_ranked":current_ranked, "legendLookup": legend_lookup, "matchups": matchups}
     )
 
 
 @app.post("/upload")
-async def upload(file: UploadFile = File(...), playerName: str = ""):
+async def upload(file: UploadFile = File(...), bhID: int = 0) -> list:
     data = await file.read()
     results = {"wins": 0, "games": 0}
 
-    #profiler = cProfile.Profile()
-    #profiler.enable()
 
     with zipfile.ZipFile(io.BytesIO(data)) as zip_ref:
         for file in zip_ref.filelist:
             if not (not file.is_dir() and file.filename.endswith(".replay")):
                 continue
-            #print(file.filename, file.file_size, file.is_dir())
             file_bytes = zip_ref.read(file.filename)
             timestamp = int(datetime(*file.date_time).timestamp())
             replay_id = hashlib.sha256(file_bytes).hexdigest()
             try:
                 replay_data = read_replay_file(file_bytes)
                 if replay_data:
-                    database.insert_replay(55428652, replay_id, timestamp, replay_data)
+                    database.insert_replay(replay_id, timestamp, replay_data)
             except:
-                pass
+                print("???")
 
-            #print(replay_data["game_data"]["version"])
-            #print(str(results["games"]) + "/12300", flush=True)
-
-    #profiler.disable()
-    #stats = pstats.Stats(profiler).sort_stats('cumulative')
-    #stats.print_stats(20)
     database.commit()
 
-    return {"message": "uploaded"}
+    return database.fetch_matchup_data(bhID)
 
 
 def get_general_player_data(bhid:int):
@@ -116,7 +107,6 @@ def generate_legend_data(data:list, lookup:dict) -> list:
     for legend in data:
         leg_id = legend["legend_id"]
         if leg_id in lookup.keys():
-            #print(legend)
             result.append({"id":leg_id, "games":legend["games"], "wins":legend["wins"],
                 "damage_dealt":legend["damage_dealt"], "damage_taken":legend["damage_taken"], 
                 "kos":legend["kos"], "falls":legend["falls"], "match_time":legend["match_time"], 
@@ -172,4 +162,15 @@ def generate_weapon_data(data:list, lookup:dict) -> list:
     return [{"name":w, **result[w]} for w in result]
 
 
-get_general_player_data(55428652)
+def get_ranked_data(bhid: int) -> dict:
+    result = {}
+    try:
+        player_data_response = requests.get(
+                stats_url,
+                params={"brawlhalla_id": bhid, "mode":"ranked_1v1"}
+            )
+        result = player_data_response.json()
+    except:
+        pass
+    return result
+

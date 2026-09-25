@@ -10,6 +10,14 @@
         {{ current | tojson }}
     </script>
 
+    <script id="current_ranked" type="application/json">
+        {{ current_ranked | tojson }}
+    </script>
+
+    <script id="matchups" type="application/json">
+        {{ matchups | tojson }}
+    </script>
+
     <script id="legendLookup" type="application/json">
         {{ legendLookup | tojson }}
     </script>
@@ -39,36 +47,19 @@
                     <p>Loses: {{current.games - current.wins}}</p>
                 </div>
                 <div class = "flex-child" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
-                    <p>Win Rate: {{(current.wins/(current.games+0.000001))*100}}%</p>
+                    <p>Win Rate: {{(current.wins/(current.games+0.000001))*100000//10/100}}%</p>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <div class="flex-container"  style="display: flex; gap: 15px; padding: 10px; justify-content: left">
-        <div class = "panel" style="background-color:#1F2937; padding: 10px; width: 100%">
-            <h2>Import Replays</h2>
-
-            <input type="file" id="replayFolder" webkitdirectory multiple>
-
-            <button id="uploadButton">Import</button>
-
-            <p id="status"></p>
-
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-            <script src="/static/upload.js"></script>
-        </div>
-    </div>
-
     <div class="flex-container"  style="display: flex; gap: 15px; padding: 10px; justify-content: left;">
         <div class = "flex-child" style="background-color:#1F2937; padding: 10px; width: 100%">
-            <button type = "button">ranked</button>
-            <button type = "button">legends</button>
-            <button type = "button">weapons</button>
+            <h2>Legends</h2>
 
             <div class ="flex-container" style="display: flex; padding:10px; justify-content: left;" margin=auto>
-                <div class="flex-child" style="display: flex; padding: 10px; flex-direction: column; gap: 5px; flex:0.25; height: 400px; overflow-y: auto; text-align: center;" margin=auto>
+                <div class="flex-child" style="display: flex; padding: 10px; flex-direction: column; gap: 5px; flex:0.25; height: 300px; overflow-y: auto; text-align: center;" margin=auto>
                     {% for l in current.legends %}
                         <button class="legend-item" onclick="selectLegend('{{l.id}}')">
                             {{legendLookup[l.id].legend_name}}
@@ -106,6 +97,7 @@
                             <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="legend_w2_kos">Weapon Two KOs:</p>
                             </div>
+                            
                         </div>
 
                     </div>
@@ -125,10 +117,10 @@
                                 break;
                             }
                         }
-                        document.getElementById("legend_playtime").textContent = "Playtime: " + current.legends[legIndx].match_time/3600 + " hours";
+                        document.getElementById("legend_playtime").textContent = "Playtime: " + Math.floor(current.legends[legIndx].match_time/360)/10 + " hours";
                         document.getElementById("legend_wins").textContent = "Wins: " + current.legends[legIndx].wins;
                         document.getElementById("legend_loses").textContent = "Loses: " + (current.legends[legIndx].games - current.legends[legIndx].wins);
-                        document.getElementById("legend_wr").textContent = "Win Rate: " + current.legends[legIndx].wins/current.legends[legIndx].games;
+                        document.getElementById("legend_wr").textContent = "Win Rate: " + Math.floor(current.legends[legIndx].wins/current.legends[legIndx].games*10000)/100 + "%";
                         
                         let w1 = legendLookup[legend].weapon_one
                         let w2 = legendLookup[legend].weapon_two
@@ -147,6 +139,288 @@
         </div>
     </div>
 
+
+    <div class="flex-container"  style="display: flex; gap: 15px; padding: 10px; justify-content: left;">
+        <div class = "flex-child" style="background-color:#1F2937; padding: 10px; width: 100%">
+            <h2>Weapons</h2>
+
+            <div class ="flex-container" style="display: flex; padding:10px; justify-content: left;" margin=auto>
+                <div class="flex-child" style="display: flex; padding: 10px; flex-direction: column; gap: 5px; flex:0.25; height: 300px; overflow-y: auto; text-align: center;" margin=auto>
+                    {% for w in current.weapons %}
+                        <button class="legend-item" onclick="selectWeapon('{{w.name}}')">
+                            {{w.name}}
+                        </button>
+                    {% endfor %}
+                </div>
+
+                <div class="flex-child" style="display: flex; flex: 1; padding: 10px; gap: 5px; text-align: center;" margin=auto>
+                    <div class = "flex-child" style="display: flex; flex-direction: column; background-color:#111827; gap: 15px; padding: 10px; width: 100%;" margin=auto>
+                        <h2 id="weapon_name">Select Weapon</h2>
+                        <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="weapon_playtime">Playtime:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="weapon_wins">Wins:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="weapon_loses">Loses:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="weapon_wr">Win Rate:</p>
+                            </div>
+                        </div>
+                        <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="weapon_kos">KOs:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="weapon_damage">Damage:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="weapon_dps">DPS:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="weapon_dpk">Damage Per KO:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="weapon_ttk">Time Per KO:</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <script>
+
+                    function selectWeapon(weapon) {
+
+                        console.log("Selected:", weapon);
+                        document.getElementById("weapon_name").textContent = weapon;
+                        let wepIndx = 0;
+                        for(let i = 0; i<current.weapons.length; i++){
+                            if (current.weapons[i].name==weapon){
+                                wepIndx=i;
+                                break;
+                            }
+                        }
+                        document.getElementById("weapon_playtime").textContent = "Playtime: " +  Math.floor(current.weapons[wepIndx].time_held/360)/10 + " hours";
+                        document.getElementById("weapon_wins").textContent = "Wins: " + current.weapons[wepIndx].wins;
+                        document.getElementById("weapon_loses").textContent = "Loses: " + (current.weapons[wepIndx].games - current.weapons[wepIndx].wins);
+                        document.getElementById("weapon_wr").textContent = "Win Rate: " + Math.floor((current.weapons[wepIndx].wins/current.weapons[wepIndx].games)*10000)/100 + "%";
+                        document.getElementById("weapon_kos").textContent = "KOs: " +  current.weapons[wepIndx].kos;
+                        document.getElementById("weapon_damage").textContent = "Damage: " + current.weapons[wepIndx].damage;
+                        document.getElementById("weapon_dps").textContent = "DPS: " + Math.floor(current.weapons[wepIndx].damage/current.weapons[wepIndx].time_held*100)/100;
+                        document.getElementById("weapon_dpk").textContent = "Damage Per KO: " + Math.floor(current.weapons[wepIndx].damage/current.weapons[wepIndx].kos*10)/10;
+                        document.getElementById("weapon_ttk").textContent = "Time Per KO: " + Math.floor(current.weapons[wepIndx].time_held/current.weapons[wepIndx].kos*10)/10 + " Secs";
+                        console.log("Selected:", wepIndx);
+                    }
+                </script>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="flex-container"  style="display: flex; gap: 15px; padding: 10px; justify-content: left;">
+        <div class = "flex-child" style="background-color:#1F2937; padding: 10px; width: 100%">
+            <h2>Ranked</h2>
+            <div class="flex-container" style="display: flex; flex: 1; padding: 10px; gap: 5px; text-align: center;" margin=auto>
+                
+                <div class = "flex-child" style="display: flex; flex-direction: column; background-color:#111827; gap: 15px; padding: 10px; width: 100%;" margin=auto>
+                    <h2 id="ranked_tier">No Ranked Data For This Season</h2>
+                    
+                    <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
+                        <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <p id="ranked_region">Region:</p>
+                        </div>
+                        <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <p id="ranked_elo">Elo:</p>
+                        </div>
+                        <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <p id="ranked_peak">Peak Elo:</p>
+                        </div>
+                        <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <p id="ranked_rank">Global Rank:</p>
+                        </div>
+                    </div>
+                    <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
+                        <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <p id="ranked_wins">Wins:</p>
+                        </div>
+                        <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <p id="ranked_loses">Loses:</p>
+                        </div>
+                        <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <p id="ranked_wr">Win Rate:</p>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <script>
+                const current_ranked = JSON.parse(document.getElementById('current_ranked').textContent);
+                if(Object.keys(current_ranked).length){
+                    document.getElementById("ranked_tier").textContent = current_ranked.tier;
+                    document.getElementById("ranked_region").textContent = "Region: " + current_ranked.region;
+                    document.getElementById("ranked_elo").textContent = "Elo: " + current_ranked.rating;
+                    document.getElementById("ranked_peak").textContent = "Peak Elo: " + current_ranked.peak_rating;
+                    document.getElementById("ranked_rank").textContent = "Global Rank: " + current_ranked.global_rank;
+                    document.getElementById("ranked_wins").textContent = "Wins: " + current_ranked.wins;
+                    document.getElementById("ranked_loses").textContent = "Loses: " + (current_ranked.games-current_ranked.wins);
+                    document.getElementById("ranked_wr").textContent = "Win Rate: " + Math.floor((current_ranked.wins/current_ranked.games)*10000)/100 + "%";
+                }
+             </script>
+        </div>
+    </div>
+
+    <div class="flex-container"  style="display: flex; gap: 15px; padding: 10px; justify-content: left">
+        <div class = "panel" style="background-color:#1F2937; padding: 10px; width: 100%">
+            <h2>Import Replays For Matchup Data</h2>
+            <p>only supports replay versions 268+</p>
+            <p>select BrawlhallaReplays folder under users/(user)</p>
+
+            <input type="file" id="replayFolder" webkitdirectory multiple>
+
+            <button id="uploadButton" onclick="uploadReplays()">Import</button>
+
+            <p id="status"></p>
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+            <script>
+                const folderInput = document.getElementById("replayFolder");
+                const uploadButton = document.getElementById("uploadButton");
+                const status = document.getElementById("status");
+                async function uploadReplays(){
+                    const files = folderInput.files;
+
+                    if (files.length === 0) {
+                        status.textContent = "Please select your replay folder.";
+                        return;
+                    }
+
+                    status.textContent = "Creating ZIP...";
+
+                    const zip = new JSZip();
+
+                    let replayCount = 0;
+
+                    const replayFiles = [];
+
+                    for (const file of files) {
+                        if (file.name.endsWith(".replay")) {
+                            replayFiles.push(file);
+                        }
+                    }
+
+                    replayFiles.sort((a, b) => b.lastModified - a.lastModified);
+
+                    const selectedFiles = replayFiles.slice(0, 100000);
+
+                    for (const file of selectedFiles) {
+                        console.log(file.name, new Date(file.lastModified));
+
+                        zip.file(file.webkitRelativePath, file, {
+                            date: new Date(file.lastModified)
+                        });
+
+                        replayCount++;
+                    }
+
+                    console.log("replayCount:", replayCount);
+                    console.log("zip files:", Object.keys(zip.files).length);
+
+                    status.textContent = `Found ${replayCount} replays. Creating ZIP...`;
+
+                    const zipBlob = await zip.generateAsync({
+                        type: "blob"
+                    });
+
+                    status.textContent = "Uploading...";
+
+                    const formData = new FormData();
+
+                    formData.append("file", zipBlob, "replays.zip");
+                    formData.append("bhID", current.brawlhalla_id);
+
+                    const response = await fetch("/upload", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        status.textContent = "Upload complete!";
+                    } else {
+                        status.textContent = "Upload failed.";
+                    }
+
+
+                }
+            </script>
+        </div>
+    </div>
+
+    <div class="flex-container"  style="display: flex; gap: 15px; padding: 10px; justify-content: left;">
+        <div class = "flex-child" style="background-color:#1F2937; padding: 10px; width: 100%">
+            <h2>Matchups</h2>
+
+            <div class ="flex-container" style="display: flex; padding:10px; justify-content: left;" margin=auto>
+                <div class="flex-child" style="display: flex; padding: 10px; flex-direction: column; gap: 5px; flex:0.25; height: 300px; overflow-y: auto; text-align: center;" margin=auto>
+                    {% for m in matchups%}
+                        <button class="legend-item" onclick="selectMatchup('{{m.legend_id}}')">
+                            {{legendLookup[m.legend_id].legend_name}}
+                        </button>
+                    {% endfor %}
+                </div>
+
+                <div class="flex-child" style="display: flex; flex: 1; padding: 10px; gap: 5px; text-align: center;" margin=auto>
+                    <div class = "flex-child" style="display: flex; flex-direction: column; background-color:#111827; gap: 15px; padding: 10px; width: 100%;" margin=auto>
+                        <h2 id="matchup_name">Select Matchup</h2>
+                        <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="matchup_wins">Wins:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="matchup_loses">Loses:</p>
+                            </div>
+                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                                <p id="matchup_wr">Win Rate:</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <script>
+                    let matchups = JSON.parse(document.getElementById('matchups').textContent);
+                    function selectMatchup(legend) {
+
+
+                        document.getElementById("matchup_name").textContent = legendLookup[legend].legend_name;
+                        let matIndx = 0;
+
+                        for(let i = 0; i<matchups.length; i++){
+                            if (matchups[i].legend_id==legend){
+                                matIndx=i;
+                                break;
+                            }
+                        }
+                        console.log("Selected:", matIndx);
+                        document.getElementById("matchup_wins").textContent = "Wins: " + matchups[matIndx].wins;
+                        document.getElementById("matchup_loses").textContent = "Loses: " + (matchups[matIndx].games - matchups[matIndx].wins);
+                        document.getElementById("matchup_wr").textContent = "Win Rate: " + Math.floor(matchups[matIndx].wins/matchups[matIndx].games*10000)/100 + "%";
+                        
+
+                        console.log("Selected:", matIndx);
+                    }
+                </script>
+            </div>
+
+
+        </div>
+    </div>
     
 
 </body>
