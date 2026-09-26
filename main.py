@@ -82,7 +82,7 @@ async def upload(file: UploadFile = File(...), bhID: int = 0) -> list:
                         batch.append(insert)
             except:
                 print("???")
-            if replay_count >= 2000:
+            if replay_count >= 5000:
                 break
         database.insert_batch(batch)
         

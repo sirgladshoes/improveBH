@@ -279,7 +279,7 @@
     <div class="flex-container"  style="display: flex; gap: 15px; padding: 10px; justify-content: left">
         <div class = "panel" style="background-color:#1F2937; padding: 10px; width: 100%">
             <h2>Import Replays For Matchup Data</h2>
-            <p>only supports replay versions 268+</p>
+            <p>only supports replay versions 268+, uploads last 5000 replays</p>
             <p>select BrawlhallaReplays folder under users/(user)</p>
 
             <input type="file" id="replayFolder" webkitdirectory multiple>
@@ -327,7 +327,7 @@
                         });
 
                         replayCount++;
-                        if(replayCount>=2000){break;}
+                        if(replayCount>=5000){break;}
                     }
 
                     console.log("replayCount:", replayCount);
