@@ -5,12 +5,17 @@
 </head>
 
 <body style="color:#E5E7EB; font-family: Arial; background-color: #111827;">
+    <style>
+        .button {border-radius: 6px; font-size: medium; background-color: #1F2937; color:#E5E7EB; border: none; padding: 10px 16px; transition-duration: 0.2s;}
+        .button:hover {background-color: #E5E7EB; color: #1F2937;}
+        .text-input {width: 20%; border: none; background-color: #1F2937; color: #E5E7EB; padding: 12px; border-radius: 6px; font-size: medium;}
+    </style>
     <h1>ImproveBH</h1>
     
     <h2>Enter Brawlhalla ID</h2>
     <form action="/playerData", method="get">
-        <input type = "text" name = "bhid">
-        <input type="submit">
+        <input  class="text-input" type = "text" name = "bhid">
+        <input class = "button" type="submit">
     </form>
 
 </body>

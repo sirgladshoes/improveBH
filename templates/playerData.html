@@ -6,6 +6,22 @@
 </head>
 
 <body style="color:#E5E7EB; font-family: Arial; background-color: #111827;">
+    <style>
+        .button {border-radius: 6px; font-size: medium; background-color: #1F2937; color:#E5E7EB; border: none; padding: 10px 16px; transition-duration: 0.2s;}
+        .button:hover {background-color: #E5E7EB; color: #1F2937;}
+        .inv-button {border-radius: 6px; font-size: medium; background-color: #111827; color:#E5E7EB; border: none; padding: 10px 16px; transition-duration: 0.2s}
+        .inv-button:hover {background-color: #E5E7EB; color: #111827;}
+        .list-button {border-radius: 6px; font-size: medium; background-color: #111827; color:#E5E7EB; border: none; padding: 10px 16px; transition-duration: 0.8s}
+        .list-button:hover {background-color: #E5E7EB; color: #111827;}
+
+        .list-scroll::-webkit-scrollbar {width: 10px;}
+        .list-scroll::-webkit-scrollbar-track {background: #111827; border-radius: 10px;}
+        /* Handle */
+        .list-scroll::-webkit-scrollbar-thumb {background: #E5E7EB; border-radius: 10px;}
+
+        .stat-widget{border-radius: 10px; padding: 10px; text-align: center;}
+    </style>
+    
     <script id="current" type="application/json">
         {{ current | tojson }}
     </script>
@@ -26,7 +42,7 @@
     <h2>Brawlhalla ID: {{current.brawlhalla_id}}, Username: {{current.name}}</h2>
     
     <form action="/" method="get">
-    <input type="submit" value="Return to Search">
+    <input type="submit" class="button" value="Return to Search">
     </form>
 
 
@@ -34,19 +50,19 @@
         <div class = "flex-child" style="background-color:#1F2937; padding: 10px; text-align: center" margin=auto>
             <h2>Basic Stats</h2>
             <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
-                <div class = "flex-child" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
+                <div class = "flex-child stat-widget" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
                     <p>Playtime: {{current.game_time//3600}} hours</p>
                 </div>
-                <div class = "flex-child" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
+                <div class = "flex-child stat-widget" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
                     <p>Level: {{current.level}}</p>
                 </div>
-                <div class = "flex-child" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
+                <div class = "flex-child stat-widget" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
                     <p>Wins: {{current.wins}}</p>
                 </div>
-                <div class = "flex-child" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
+                <div class = "flex-child stat-widget" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
                     <p>Loses: {{current.games - current.wins}}</p>
                 </div>
-                <div class = "flex-child" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
+                <div class = "flex-child stat-widget" style="background-color: #111827; flex: 1; padding: 10px; text-align: center" margin=auto>
                     <p>Win Rate: {{(current.wins/(current.games+0.000001))*100000//10/100}}%</p>
                 </div>
             </div>
@@ -59,9 +75,9 @@
             <h2>Legends</h2>
 
             <div class ="flex-container" style="display: flex; padding:10px; justify-content: left;" margin=auto>
-                <div class="flex-child" style="display: flex; padding: 10px; flex-direction: column; gap: 5px; flex:0.25; height: 300px; overflow-y: auto; text-align: center;" margin=auto>
+                <div class="flex-child list-scroll" style="display: flex; padding: 10px; flex-direction: column; gap: 5px; flex:0.25; height: 300px; overflow-y: auto; text-align: center;" margin=auto>
                     {% for l in current.legends %}
-                        <button class="legend-item" onclick="selectLegend('{{l.id}}')">
+                        <button class="list-button" onclick="selectLegend('{{l.id}}')">
                             {{legendLookup[l.id].legend_name}}
                         </button>
                     {% endfor %}
@@ -71,30 +87,30 @@
                     <div class = "flex-child" style="display: flex; flex-direction: column; background-color:#111827; gap: 15px; padding: 10px; width: 100%;" margin=auto>
                         <h2 id="legend_name">Select Legend</h2>
                         <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="legend_playtime">Playtime:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="legend_wins">Wins:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="legend_loses">Loses:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="legend_wr">Win Rate:</p>
                             </div>
                         </div>
                         <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="legend_w1_damage">Weapon One Damage:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="legend_w1_kos">Weapon One KOs:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="legend_w2_damage">Weapon Two Damage:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="legend_w2_kos">Weapon Two KOs:</p>
                             </div>
                             
@@ -145,9 +161,9 @@
             <h2>Weapons</h2>
 
             <div class ="flex-container" style="display: flex; padding:10px; justify-content: left;" margin=auto>
-                <div class="flex-child" style="display: flex; padding: 10px; flex-direction: column; gap: 5px; flex:0.25; height: 300px; overflow-y: auto; text-align: center;" margin=auto>
+                <div class="flex-child list-scroll" style="display: flex; padding: 10px; flex-direction: column; gap: 5px; flex:0.25; height: 300px; overflow-y: auto; text-align: center;" margin=auto>
                     {% for w in current.weapons %}
-                        <button class="legend-item" onclick="selectWeapon('{{w.name}}')">
+                        <button class="list-button" onclick="selectWeapon('{{w.name}}')">
                             {{w.name}}
                         </button>
                     {% endfor %}
@@ -157,33 +173,33 @@
                     <div class = "flex-child" style="display: flex; flex-direction: column; background-color:#111827; gap: 15px; padding: 10px; width: 100%;" margin=auto>
                         <h2 id="weapon_name">Select Weapon</h2>
                         <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="weapon_playtime">Playtime:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="weapon_wins">Wins:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="weapon_loses">Loses:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="weapon_wr">Win Rate:</p>
                             </div>
                         </div>
                         <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="weapon_kos">KOs:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="weapon_damage">Damage:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="weapon_dps">DPS:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="weapon_dpk">Damage Per KO:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="weapon_ttk">Time Per KO:</p>
                             </div>
                         </div>
@@ -231,27 +247,27 @@
                     <h2 id="ranked_tier">No Ranked Data For This Season</h2>
                     
                     <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
-                        <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                        <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                             <p id="ranked_region">Region:</p>
                         </div>
-                        <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                        <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                             <p id="ranked_elo">Elo:</p>
                         </div>
-                        <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                        <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                             <p id="ranked_peak">Peak Elo:</p>
                         </div>
-                        <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                        <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                             <p id="ranked_rank">Global Rank:</p>
                         </div>
                     </div>
                     <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
-                        <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                        <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                             <p id="ranked_wins">Wins:</p>
                         </div>
-                        <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                        <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                             <p id="ranked_loses">Loses:</p>
                         </div>
-                        <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                        <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                             <p id="ranked_wr">Win Rate:</p>
                         </div>
 
@@ -282,9 +298,9 @@
             <p>only supports replay versions 268+, uploads last 5000 replays</p>
             <p>select BrawlhallaReplays folder under users/(user)</p>
 
-            <input type="file" id="replayFolder" webkitdirectory multiple>
+            <input type="file" class="inv-button" id="replayFolder" webkitdirectory multiple>
 
-            <button id="uploadButton" onclick="uploadReplays()">Import</button>
+            <button id="uploadButton" class="inv-button" onclick="uploadReplays()">Import</button>
 
             <p id="status"></p>
 
@@ -364,13 +380,13 @@
     </div>
 
     <div class="flex-container"  style="display: flex; gap: 15px; padding: 10px; justify-content: left;">
-        <div class = "flex-child" style="background-color:#1F2937; padding: 10px; width: 100%">
+        <div class = "flex-child list-scroll" style="background-color:#1F2937; padding: 10px; width: 100%">
             <h2>Matchups</h2>
 
             <div class ="flex-container" style="display: flex; padding:10px; justify-content: left;" margin=auto>
-                <div class="flex-child" style="display: flex; padding: 10px; flex-direction: column; gap: 5px; flex:0.25; height: 300px; overflow-y: auto; text-align: center;" margin=auto>
+                <div class="flex-child list-scroll" style="display: flex; padding: 10px; flex-direction: column; gap: 5px; flex:0.25; height: 300px; overflow-y: auto; text-align: center;" margin=auto>
                     {% for m in matchups%}
-                        <button class="legend-item" onclick="selectMatchup('{{m.legend_id}}')">
+                        <button class="list-button" onclick="selectMatchup('{{m.legend_id}}')">
                             {{legendLookup[m.legend_id].legend_name}}
                         </button>
                     {% endfor %}
@@ -380,13 +396,13 @@
                     <div class = "flex-child" style="display: flex; flex-direction: column; background-color:#111827; gap: 15px; padding: 10px; width: 100%;" margin=auto>
                         <h2 id="matchup_name">Select Matchup</h2>
                         <div class="flex-container" style="display: flex; gap: 15px; justify-content: center">
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="matchup_wins">Wins:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="matchup_loses">Loses:</p>
                             </div>
-                            <div class = "flex-child" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
+                            <div class = "flex-child stat-widget" style="background-color: #1F2937; flex: 1; padding: 10px; text-align: center" margin=auto>
                                 <p id="matchup_wr">Win Rate:</p>
                             </div>
                         </div>
