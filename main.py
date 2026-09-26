@@ -67,7 +67,9 @@ async def upload(file: UploadFile = File(...), bhID: int = 0) -> list:
 
     with zipfile.ZipFile(io.BytesIO(data)) as zip_ref:
         batch = []
+        replay_count = 0
         for file in zip_ref.filelist:
+            replay_count+=1
             if not (not file.is_dir() and file.filename.endswith(".replay")):
                 continue
             file_bytes = zip_ref.read(file.filename)
@@ -80,6 +82,8 @@ async def upload(file: UploadFile = File(...), bhID: int = 0) -> list:
                         batch.append(insert)
             except:
                 print("???")
+            if replay_count >= 2000:
+                break
         database.insert_batch(batch)
         
 
