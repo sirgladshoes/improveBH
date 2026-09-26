@@ -266,11 +266,11 @@ def read_faces(bit_reader: BitReader, is_KO) -> dict:
 # tenten_path = "C:/Users/finnl/BrawlhallaReplays/[10.10] World'sEnd.replay"
 # ninezero_path = "C:/Users/finnl/BrawlhallaReplays/[9.01] Apocalypse (10).replay"
 
-replay_folder_path = "C:/Users/finnl/BrawlhallaReplays"
-replay_folder = Path(replay_folder_path)
+#replay_folder_path = "C:/Users/finnl/BrawlhallaReplays"
+#replay_folder = Path(replay_folder_path)
 
-files = [file for file in replay_folder.iterdir() if file.is_file()]
-files.sort(key = lambda file: file.stat().st_mtime)
+#files = [file for file in replay_folder.iterdir() if file.is_file()]
+#files.sort(key = lambda file: file.stat().st_mtime)
 
 
 #print(read_replay_file(files[-120].read_bytes()))
