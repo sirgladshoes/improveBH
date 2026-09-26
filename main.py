@@ -8,17 +8,30 @@ from datetime import datetime
 from time import time
 import hashlib
 
-import cProfile
-import pstats
+from contextlib import asynccontextmanager
 
 stats_url = "https://api.brawlhalla.com/v1/player/stats"
 legends_url = "https://api.brawlhalla.com/v1/static/legends"
-
-app = FastAPI()
-
-app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
-legend_lookup = {legend["legend_id"]: legend for legend in requests.get(legends_url,params={"max_results": 100}).json()["legends"]}
+legend_lookup = {}
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global legend_lookup
+    global templates
+    database.init_tables()
+
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+    templates = Jinja2Templates(directory="templates")
+    legend_lookup = {legend["legend_id"]: legend for legend in requests.get(legends_url,params={"max_results": 100}).json()["legends"]}
+
+    yield
+    database.close()
+
+app = FastAPI(lifespan=lifespan)
+
+
 
 @app.get("/")
 def home(request: Request):
@@ -53,6 +66,7 @@ async def upload(file: UploadFile = File(...), bhID: int = 0) -> list:
 
 
     with zipfile.ZipFile(io.BytesIO(data)) as zip_ref:
+        batch = []
         for file in zip_ref.filelist:
             if not (not file.is_dir() and file.filename.endswith(".replay")):
                 continue
@@ -62,11 +76,12 @@ async def upload(file: UploadFile = File(...), bhID: int = 0) -> list:
             try:
                 replay_data = read_replay_file(file_bytes)
                 if replay_data:
-                    database.insert_replay(replay_id, timestamp, replay_data)
+                    for insert in database.get_replay_batch(replay_id, timestamp, replay_data):
+                        batch.append(insert)
             except:
                 print("???")
-
-    database.commit()
+        database.insert_batch(batch)
+        
 
     return database.fetch_matchup_data(bhID)
 
