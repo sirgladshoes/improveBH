@@ -155,7 +155,7 @@ def init_tables():
     create_table("trackedPlayers(bhID INTEGER UNIQUE)")
 
     create_table("replays(replayID TEXT UNIQUE, timestamp INTEGER, isOnline BOOLEAN, gameModeName TEXT)")
-    create_table("replayPlayers(replayID TEXT, bhID INTEGER, legends, placement INTEGER, deaths INTEGER, UNIQUE (replayID, playerID))")
+    create_table("replayPlayers(replayID TEXT, bhID INTEGER, legends, placement INTEGER, deaths INTEGER, UNIQUE (replayID, bhID))")
 
     create_table("playerSnapshots(bhID INTEGER, timestamp INTEGER, gameTime INTEGER, level INTEGER, games INTEGER, wins INTEGER)")
     create_table("legendSnapshots(bhID INTEGER, timestamp INTEGER, legID INTEGER, games INTEGER, wins INTEGER, damageDealt INTEGER, damageTaken INTEGER, kos INTEGER, falls INTEGER, matchtime INTEGER)")
