@@ -30,12 +30,12 @@ def get_replay_batch(replay_id, timestamp, replay_data) -> list:
     is_online = replay_data["game_data"]["isOnline"]
     gamemode = replay_data["game_data"].get("playlistName", None)
 
-    result.append(("INSERT INTO replays VALUES (?, ?, ?, ?)", (replay_id, timestamp, bool(is_online), gamemode)))
+    result.append(("INSERT OR IGNORE INTO replays VALUES (?, ?, ?, ?)", (replay_id, timestamp, bool(is_online), gamemode)))
 
     for player in player_data:
         player_id = player_data[player].get("playerID", False)
         if player_id:
-            result.append(("INSERT INTO replayPlayers VALUES (?, ?, ?, ?, ?)", 
+            result.append(("INSERT OR IGNORE INTO replayPlayers VALUES (?, ?, ?, ?, ?)", 
             (replay_id, player_id, json.dumps(player_data[player]["legends"]), player_data[player].get("placement", None), player_data[player].get("deaths", None))))
     return result
 
@@ -155,7 +155,7 @@ def init_tables():
     create_table("trackedPlayers(bhID INTEGER UNIQUE)")
 
     create_table("replays(replayID TEXT UNIQUE, timestamp INTEGER, isOnline BOOLEAN, gameModeName TEXT)")
-    create_table("replayPlayers(replayID TEXT, bhID INTEGER, legends, placement INTEGER, deaths INTEGER)")
+    create_table("replayPlayers(replayID TEXT, bhID INTEGER, legends, placement INTEGER, deaths INTEGER, UNIQUE (replayID, playerID))")
 
     create_table("playerSnapshots(bhID INTEGER, timestamp INTEGER, gameTime INTEGER, level INTEGER, games INTEGER, wins INTEGER)")
     create_table("legendSnapshots(bhID INTEGER, timestamp INTEGER, legID INTEGER, games INTEGER, wins INTEGER, damageDealt INTEGER, damageTaken INTEGER, kos INTEGER, falls INTEGER, matchtime INTEGER)")
