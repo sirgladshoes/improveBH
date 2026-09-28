@@ -38,6 +38,7 @@ def home(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="home.html",
+        context = {"fail":""}
     )
 
 @app.get("/playerData")
@@ -49,6 +50,7 @@ async def search(request:Request, bhid:str):
         return templates.TemplateResponse(
             request=request,
             name="home.html",
+            context = {"fail":"failed to fetch player"}
         )
 
 
