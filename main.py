@@ -43,13 +43,14 @@ def home(request: Request):
 @app.get("/playerData")
 async def search(request:Request, bhid:str):
 
-    current = get_general_player_data(int(bhid))
-
-    if not (current):
+    try:
+        current = get_general_player_data(int(bhid))
+    except:
         return templates.TemplateResponse(
-                request=request,
-                name="home.html",
-            )
+            request=request,
+            name="home.html",
+        )
+
 
     current_ranked = get_ranked_data(int(bhid))
     if not database.has_player(int(bhid)):
@@ -106,11 +107,7 @@ def get_general_player_data(bhid:int):
 
     player_data = {"brawlhalla_id":bhid, "name":"No Data", "wins":0, "games":0, "level":0, "legends":[], "weapons": []}
 
-    response_data = {}
-    if player_data_response.ok:
-        response_data = player_data_response.json()
-    else:
-        return {}
+    response_data = player_data_response.json()
 
     for key in player_data.keys():
         if key == "legends":
