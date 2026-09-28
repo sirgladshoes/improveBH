@@ -62,10 +62,6 @@ def fetch_general_player_data(bhID:int):
 
     return result
 
-def fetch_legend_data(bhID:int):
-    result = []
-    return result
-
 def fetch_matchup_data_old(bhID:int):
     result = {}
     replayIDs = con.execute("SELECT rp2.legends, rp1.placement AS player_placement,  FROM replayPlayers WHERE bhID="+str(bhID)).rows
@@ -129,6 +125,17 @@ def fetch_matchup_data(bhID: int):
     for id in order:
         sorted_result.append({"legend_id":id, "games":result[id]["games"], "wins":result[id]["wins"]})
     return sorted_result
+
+def fetch_ranked_data(bhID: int) -> dict:
+    data = con.execute("SELECT * FROM rankedPlayerSnapshots WHERE bhID="+str(bhID)+" ORDER BY timestamp").rows
+    result = {"time":[], "rating":[], "wr":[]}
+    for snapshot in data:
+        result["time"].append(snapshot[1])
+        result["rating"].append(snapshot[4])
+        result["wr"].append(snapshot[3]/snapshot[2])
+
+    return result
+
 
 def insert_general_api_data(timestamp, data:dict):
     bhID = data["brawlhalla_id"]

@@ -61,11 +61,12 @@ async def search(request:Request, bhid:str):
         if current_ranked: database.insert_ranked_api_data(int(time()), current_ranked)
 
     matchups = database.fetch_matchup_data(int(bhid))
-
+    hist_ranked = database.fetch_ranked_data(int(bhid))
+    print(hist_ranked)
     return templates.TemplateResponse(
         request=request,
         name="playerData.html",
-        context={"current":current, "current_ranked":current_ranked, "legendLookup": legend_lookup, "matchups": matchups}
+        context={"current":current, "current_ranked":current_ranked, "legendLookup": legend_lookup, "matchups": matchups, "hist_ranked":hist_ranked}
     )
 
 
@@ -190,6 +191,9 @@ def generate_weapon_data(data:list, lookup:dict) -> list:
             result[wep_two]["wins"] += legend["wins"]
 
     return [{"name":w, **result[w]} for w in result]
+
+def get_hist_ranked_data(bhid: int) -> dict:
+    return{"time":[1,2,3,4], "elo":[1000, 1015, 1030, 1045]}
 
 
 def get_ranked_data(bhid: int) -> dict:
