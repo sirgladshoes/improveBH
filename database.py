@@ -146,7 +146,7 @@ def insert_ranked_api_data(timestamp, data:dict):
     con.execute("INSERT INTO rankedPlayerSnapshots VALUES (?, ?, ?, ?, ?, ?, ?)", 
                 (bhID, timestamp, data["games"], data["wins"], data["rating"], data["tier"], data["global_rank"]))
     for legend in data["legends"]:
-        con.execute("INSERT INTO rankedLegendSnapshots VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
+        con.execute("INSERT INTO rankedLegendSnapshots VALUES (?, ?, ?, ?, ?, ?, ?)", 
             (bhID, timestamp, legend["legend_id"], legend["games"], legend["wins"], legend["rating"], legend["tier"]))
 
 def init_tables():

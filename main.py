@@ -43,13 +43,20 @@ def home(request: Request):
 @app.get("/playerData")
 async def search(request:Request, bhid:str):
 
-    data = get_general_player_data(int(bhid))
+    current = get_general_player_data(int(bhid))
+
+    if not (current):
+        return templates.TemplateResponse(
+                request=request,
+                name="home.html",
+            )
+
+    current_ranked = get_ranked_data(int(bhid))
     if not database.has_player(int(bhid)):
         database.insert_tracked_player(int(bhid))
-        database.insert_general_api_data(int(time()), data)
+        database.insert_general_api_data(int(time()), current)
+        if current_ranked: database.insert_ranked_api_data(int(time()), current_ranked)
 
-    current = get_general_player_data(int(bhid))
-    current_ranked = get_ranked_data(int(bhid))
     matchups = database.fetch_matchup_data(int(bhid))
 
     return templates.TemplateResponse(
@@ -93,12 +100,17 @@ async def upload(file: UploadFile = File(...), bhID: int = 0) -> list:
 def get_general_player_data(bhid:int):
     player_data_response = requests.get(
         stats_url,
-        params={"brawlhalla_id": bhid}
+        params={"brawlhalla_id": bhid},
+        timeout=5
     )
 
     player_data = {"brawlhalla_id":bhid, "name":"No Data", "wins":0, "games":0, "level":0, "legends":[], "weapons": []}
 
-    response_data = player_data_response.json()
+    response_data = {}
+    if response_data.ok:
+        response_data = player_data_response.json()
+    else:
+        return {}
 
     for key in player_data.keys():
         if key == "legends":
@@ -183,13 +195,13 @@ def generate_weapon_data(data:list, lookup:dict) -> list:
 
 def get_ranked_data(bhid: int) -> dict:
     result = {}
-    try:
-        player_data_response = requests.get(
-                stats_url,
-                params={"brawlhalla_id": bhid, "mode":"ranked_1v1"}
-            )
+    player_data_response = requests.get(
+            stats_url,
+            params={"brawlhalla_id": bhid, "mode":"ranked_1v1"},
+            timeout=5
+        )
+    if player_data_response.ok:
         result = player_data_response.json()
-    except:
-        pass
+
     return result
 
