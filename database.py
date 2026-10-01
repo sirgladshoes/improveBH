@@ -117,7 +117,7 @@ def fetch_matchup_data(bhID: int):
 
             result[legend]["games"] += 1
 
-            if player_placement > opponent_placement:
+            if player_placement < opponent_placement:
                 result[legend]["wins"] += 1
 
     order = sorted(result, key=lambda legend: result[legend]["wins"]/result[legend]["games"])
