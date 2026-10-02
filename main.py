@@ -118,7 +118,7 @@ def get_general_player_data(bhid:int):
         elif key == "weapons":
             player_data[key] = generate_weapon_data(response_data["legends"], legend_lookup)
         else:
-            player_data[key] = response_data[key]
+            player_data[key] = response_data.get(key, "None")
 
 
     game_time = 0
@@ -207,4 +207,3 @@ def get_ranked_data(bhid: int) -> dict:
         result = player_data_response.json()
 
     return result
-
