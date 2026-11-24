@@ -62,7 +62,6 @@ async def search(request:Request, bhid:str):
 
     matchups = database.fetch_matchup_data(int(bhid))
     hist_ranked = database.fetch_ranked_data(int(bhid))
-    print(hist_ranked)
     return templates.TemplateResponse(
         request=request,
         name="playerData.html",
@@ -73,7 +72,6 @@ async def search(request:Request, bhid:str):
 @app.post("/upload")
 async def upload(file: UploadFile = File(...), bhID: int = 0) -> list:
     data = await file.read()
-    results = {"wins": 0, "games": 0}
 
 
     with zipfile.ZipFile(io.BytesIO(data)) as zip_ref:
@@ -191,9 +189,6 @@ def generate_weapon_data(data:list, lookup:dict) -> list:
             result[wep_two]["wins"] += legend["wins"]
 
     return [{"name":w, **result[w]} for w in result]
-
-def get_hist_ranked_data(bhid: int) -> dict:
-    return{"time":[1,2,3,4], "elo":[1000, 1015, 1030, 1045]}
 
 
 def get_ranked_data(bhid: int) -> dict:

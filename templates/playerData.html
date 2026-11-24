@@ -300,9 +300,12 @@
                     document.getElementById("ranked_wr").textContent = "Win Rate: " + Math.floor((current_ranked.wins/current_ranked.games)*10000)/100 + "%";
                 }
                 const hist_ranked = JSON.parse(document.getElementById('hist_ranked').textContent);
+                const datapointCount = 20;
                 if(Object.keys(hist_ranked).length){
                     const chrt = document.getElementById("myChart")
                     const timestamps = hist_ranked.time.map(t=>new Date(t*1000))
+                    const maxTimestamp = timestamps[timestamps.length-1]
+                    const minTimestamp = timestamps[Math.max(timestamps.length-datapointCount, 0)]
                     new Chart(chrt, {
                         type: "line",
                         data: {
@@ -329,8 +332,8 @@
                                     time: {
                                         unit: 'day'
                                     },
-                                    ticks:{source:"data"}
-
+                                    ticks:{source:"data"},
+                                    min: minTimestamp, max: maxTimestamp
                                 },
                                 yElo: {
                                     type: "linear",
